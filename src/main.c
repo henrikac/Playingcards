@@ -9,6 +9,12 @@
 #include <stdlib.h>
 #include <time.h>
 
+#if defined(_WIN32) || defined(_WIN64)
+#define CLEAR "cls"
+#else
+#define CLEAR "clear"
+#endif
+
 #define DECK_SIZE 55
 #define NUM_SUITS 4
 #define NUM_VALUES 13
@@ -31,11 +37,15 @@ int main(void)
 {
   card *deck = Calloc(DECK_SIZE);
 
+  system(CLEAR);
+
   create_deck(deck);
   display_deck("\nNew Deck:\n", deck);
 
   shuffle_deck(deck, DECK_SIZE);
   display_deck("\n\nShuffled Deck:\n", deck);
+
+  printf("\n\n");
 
   if (deck)
     free(deck);
@@ -74,7 +84,6 @@ void create_deck(card *deck)
 void shuffle_deck(card *deck, size_t deck_size)
 {
   int i, new_index;
-  /* card tmp; */
 
   srand(time(NULL));
 
@@ -82,9 +91,6 @@ void shuffle_deck(card *deck, size_t deck_size)
   {
     new_index = rand() % deck_size;
     swap_cards(&deck[i], &deck[new_index]);
-    /* tmp = deck[new_index]; */
-    /* deck[new_index] = deck[i]; */
-    /* deck[i] = tmp; */
   }
 }
 
