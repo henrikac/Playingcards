@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -19,7 +20,7 @@
 #define NUM_SUITS 4
 #define NUM_VALUES 13
 
-typedef enum { CLUBS, DIAMONDS, HEARTS, SPADES, NONE } suit;
+typedef enum { CLUBS, DIAMONDS, HEARTS, SPADES, NONE } suit; /**< NONE for jokers */
 typedef enum { TWO = 2, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, J, Q, K, A, JOKER } rank;
 
 typedef struct {
@@ -31,11 +32,12 @@ void create_deck(card *deck);
 void shuffle_deck(card *deck, size_t deck_size);
 void swap_cards(card *c1, card *c2);
 void display_deck(const char *title, const card *deck);
-card *Calloc(size_t num_cards);
+char *get_card(card *card);
+void *Calloc(size_t num_items, size_t item_size);
 
 int main(void)
 {
-  card *deck = Calloc(DECK_SIZE);
+  card *deck = (card*)Calloc(DECK_SIZE, sizeof(card));
 
   system(CLEAR);
 
@@ -104,19 +106,50 @@ void swap_cards(card *c1, card *c2)
 void display_deck(const char *title, const card *deck)
 {
   int i;
+  char *card_value;
 
   printf(title);
   for (i = 0; i < DECK_SIZE; i++)
   {
+    card_value = get_card(&deck[i]);
+
     if (i % 13 == 0)
       printf("\n");
-    printf(" %d |", deck[i].vaerdi);
+    printf(" %s |", card_value);
+
+    free(card_value);
   }
 }
 
-card *Calloc(size_t num_cards)
+char *get_card(card *card)
 {
-  card *c = (card*)calloc(num_cards, sizeof(card));
+  char *c = (char*)Calloc(6, sizeof(char));
+
+  switch (card->kuloer)
+  {
+    case CLUBS:
+      sprintf(c, "C%d", card->vaerdi);
+      break;
+    case DIAMONDS:
+      sprintf(c, "D%d", card->vaerdi);
+      break;
+    case HEARTS:
+      sprintf(c, "H%d", card->vaerdi);
+      break;
+    case SPADES:
+      sprintf(c, "S%d", card->vaerdi);
+      break;
+    case NONE:
+      strcpy(c, "JOKER");
+      break;
+  }
+
+  return c;
+}
+
+void *Calloc(size_t num_items, size_t item_size)
+{
+  void *c = calloc(num_items, item_size);
   if (c == NULL)
   {
     printf("\nCouldn't allocate memory");
