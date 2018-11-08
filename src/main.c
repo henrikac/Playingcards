@@ -31,9 +31,9 @@ typedef struct {
 void create_deck(card *deck);
 void shuffle_deck(card *deck, size_t deck_size);
 void swap_cards(card *c1, card *c2);
-void display_deck(const char *title, const card *deck);
-char *get_card(card *card);
-void *Calloc(size_t num_items, size_t item_size);
+void display_deck(const char *title, card *deck);
+char *get_card(const card *card);
+void *Calloc(size_t nitems, size_t size);
 
 int main(void)
 {
@@ -103,7 +103,7 @@ void swap_cards(card *c1, card *c2)
   *c1 = tmp;
 }
 
-void display_deck(const char *title, const card *deck)
+void display_deck(const char *title, card *deck)
 {
   int i;
   char *card_value;
@@ -121,7 +121,7 @@ void display_deck(const char *title, const card *deck)
   }
 }
 
-char *get_card(card *card)
+char *get_card(const card *card)
 {
   char *c = (char*)Calloc(6, sizeof(char));
 
@@ -147,9 +147,9 @@ char *get_card(card *card)
   return c;
 }
 
-void *Calloc(size_t num_items, size_t item_size)
+void *Calloc(size_t nitems, size_t size)
 {
-  void *c = calloc(num_items, item_size);
+  void *c = calloc(nitems, size);
   if (c == NULL)
   {
     printf("\nCouldn't allocate memory");
