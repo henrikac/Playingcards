@@ -29,6 +29,7 @@ typedef struct {
 } card;
 
 void create_deck(card *deck);
+card create_card(suit suit, rank rank);
 void shuffle_deck(card *deck, size_t deck_size);
 void swap_cards(card *c1, card *c2);
 void display_deck(const char *title, card *deck);
@@ -49,8 +50,7 @@ int main(void)
 
   printf("\n\n");
 
-  if (deck)
-    free(deck);
+  free(deck);
 
   return EXIT_SUCCESS;
 }
@@ -59,28 +59,32 @@ void create_deck(card *deck)
 {
   int i, j;
   size_t num_cards = 0;
-  card card;
 
   for (i = 0; i < NUM_SUITS; i++)
   {
     for (j = 0; j < NUM_VALUES; j++)
     {
-      card.kuloer = (suit)i;
-      card.vaerdi = (rank)j + 2;
-      deck[num_cards++] = card;
+      deck[num_cards++] = create_card((suit)i, (rank)(j + 2));
     }
 
     if (i == 3)
     {
-      card.kuloer = NONE;
-      card.vaerdi = JOKER;
-
       for (j = num_cards; j < DECK_SIZE; j++)
       {
-        deck[num_cards++] = card;
+        deck[num_cards++] = create_card(NONE, JOKER);
       }
     }
   }
+}
+
+card create_card(suit suit, rank rank)
+{
+  card c;
+
+  c.kuloer = suit;
+  c.vaerdi = rank;
+
+  return c;
 }
 
 void shuffle_deck(card *deck, size_t deck_size)
