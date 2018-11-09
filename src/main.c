@@ -29,6 +29,7 @@ typedef struct {
 } card;
 
 void create_deck(card *deck);
+void add_suit(card *deck, size_t *counter, suit suit);
 card create_card(suit suit, rank rank);
 void shuffle_deck(card *deck, size_t deck_size);
 void swap_cards(card *c1, card *c2);
@@ -57,24 +58,22 @@ int main(void)
 
 void create_deck(card *deck)
 {
-  int i, j;
+  int i;
   size_t num_cards = 0;
 
   for (i = 0; i < NUM_SUITS; i++)
-  {
-    for (j = 0; j < NUM_VALUES; j++)
-    {
-      deck[num_cards++] = create_card((suit)i, (rank)(j + 2));
-    }
+    add_suit(deck, &num_cards, (suit)i);
 
-    if (i == 3)
-    {
-      for (j = num_cards; j < DECK_SIZE; j++)
-      {
-        deck[num_cards++] = create_card(NONE, JOKER);
-      }
-    }
-  }
+  for (i = num_cards; i < DECK_SIZE; i++)
+    deck[num_cards++] = create_card(NONE, JOKER);
+}
+
+void add_suit(card *deck, size_t *counter, suit suit)
+{
+  int i;
+
+  for (i = 0; i < NUM_VALUES; i++)
+    deck[(*counter)++] = create_card(suit, (rank)(i + 2));
 }
 
 card create_card(suit suit, rank rank)
