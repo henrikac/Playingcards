@@ -24,8 +24,8 @@ typedef enum { CLUBS, DIAMONDS, HEARTS, SPADES, NONE } suit; /**< NONE for joker
 typedef enum { TWO = 2, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, J, Q, K, A, JOKER } rank;
 
 typedef struct {
-  suit kuloer;
-  rank vaerdi;
+  suit suit; /* kuloer */
+  rank rank; /* rank */
 } card;
 
 void create_deck(card *deck);
@@ -35,6 +35,8 @@ void shuffle_deck(card *deck, size_t deck_size);
 void swap_cards(card *c1, card *c2);
 void display_deck(const char *title, card *deck);
 char *get_card(const card *card);
+void sort_deck(card *deck);
+int cmp_cards(const void *c1, const void *c2);
 void *Calloc(size_t nitems, size_t size);
 
 int main(void)
@@ -49,9 +51,13 @@ int main(void)
   shuffle_deck(deck, DECK_SIZE);
   display_deck("\n\nShuffled Deck:\n", deck);
 
+  sort_deck(deck);
+  display_deck("\n\nSorted Deck:\n", deck);
+
   printf("\n\n");
 
-  free(deck);
+  if (deck)
+    free(deck);
 
   return EXIT_SUCCESS;
 }
@@ -81,8 +87,8 @@ card create_card(suit suit, rank rank)
 {
   card c;
 
-  c.kuloer = suit;
-  c.vaerdi = rank;
+  c.suit = suit;
+  c.rank = rank;
 
   return c;
 }
@@ -121,7 +127,8 @@ void display_deck(const char *title, card *deck)
       printf("\n");
     printf(" %s |", card_value);
 
-    free(card_value);
+    if (card_value)
+      free(card_value);
   }
 }
 
@@ -129,19 +136,19 @@ char *get_card(const card *card)
 {
   char *c = (char*)Calloc(6, sizeof(char));
 
-  switch (card->kuloer)
+  switch (card->suit)
   {
     case CLUBS:
-      sprintf(c, "C%d", card->vaerdi);
+      sprintf(c, "C%d", card->rank);
       break;
     case DIAMONDS:
-      sprintf(c, "D%d", card->vaerdi);
+      sprintf(c, "D%d", card->rank);
       break;
     case HEARTS:
-      sprintf(c, "H%d", card->vaerdi);
+      sprintf(c, "H%d", card->rank);
       break;
     case SPADES:
-      sprintf(c, "S%d", card->vaerdi);
+      sprintf(c, "S%d", card->rank);
       break;
     case NONE:
       strcpy(c, "JOKER");
@@ -149,6 +156,31 @@ char *get_card(const card *card)
   }
 
   return c;
+}
+
+void sort_deck(card *deck) /* sorter_kort */
+{
+  qsort(deck, DECK_SIZE, sizeof(card), cmp_cards);
+}
+
+int cmp_cards(const void *c1, const void *c2)
+{
+  card *card1 = (card*)c1,
+       *card2 = (card*)c2;
+
+  if (card1->suit < card2->suit)
+    return -1;
+  else if (card1->suit > card2->suit)
+    return 1;
+  else
+  {
+    if (card1->rank < card2->rank)
+      return -1;
+    else if (card1->rank > card2->rank)
+      return 1;
+    else
+      return 0;
+  }
 }
 
 void *Calloc(size_t nitems, size_t size)
