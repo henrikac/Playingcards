@@ -25,13 +25,13 @@ typedef enum { TWO = 2, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, J, Q, K
 
 typedef struct {
   suit suit; /* kuloer */
-  rank rank; /* rank */
+  rank rank; /* vaerdi */
 } card;
 
 void create_deck(card *deck);
 void add_suit(card *deck, size_t *counter, suit suit);
 card create_card(suit suit, rank rank);
-void shuffle_deck(card *deck, size_t deck_size);
+void shuffle_deck(card *deck);
 void swap_cards(card *c1, card *c2);
 void display_deck(const char *title, card *deck);
 char *get_card(const card *card);
@@ -48,7 +48,7 @@ int main(void)
   create_deck(deck);
   display_deck("\nNew Deck:\n", deck);
 
-  shuffle_deck(deck, DECK_SIZE);
+  shuffle_deck(deck);
   display_deck("\n\nShuffled Deck:\n", deck);
 
   sort_deck(deck);
@@ -62,6 +62,10 @@ int main(void)
   return EXIT_SUCCESS;
 }
 
+/**
+ * creates a deck of playing cards
+ * @param[in] deck Deck to add cards to
+*/
 void create_deck(card *deck)
 {
   int i;
@@ -75,6 +79,12 @@ void create_deck(card *deck)
       deck[num_cards++] = create_card(NONE, JOKER);
 }
 
+/**
+ * adds a suit with cards ranking from 2 to A (ace) to the deck
+ * @param[in] deck The deck to add the suit to
+ * @param[in, out] counter Variable that keeps track of the number of cards current in the deck
+ * @param[in] suit The suit to add to the cards
+*/
 void add_suit(card *deck, size_t *counter, suit suit)
 {
   int i;
@@ -83,6 +93,12 @@ void add_suit(card *deck, size_t *counter, suit suit)
     deck[(*counter)++] = create_card(suit, (rank)(i + 2));
 }
 
+/**
+ * create a card
+ * @param[in] suit The suit of the card
+ * @param[in] rank The rank of the card
+ * @return a card with suit and rank
+*/
 card create_card(suit suit, rank rank)
 {
   card c;
@@ -93,19 +109,28 @@ card create_card(suit suit, rank rank)
   return c;
 }
 
-void shuffle_deck(card *deck, size_t deck_size)
+/**
+ * shuffles a deck of playing cards
+ * @param[in] deck Deck to shuffle
+*/
+void shuffle_deck(card *deck)
 {
   int i, new_index;
 
   srand(time(NULL));
 
-  for (i = 0; i < deck_size; i++)
+  for (i = 0; i < DECK_SIZE; i++)
   {
-    new_index = rand() % deck_size;
+    new_index = rand() % DECK_SIZE;
     swap_cards(&deck[i], &deck[new_index]);
   }
 }
 
+/**
+ * swaps two cards
+ * @param[in] c1 Card number 1
+ * @param[in] c2 Card number 2
+*/
 void swap_cards(card *c1, card *c2)
 {
   card tmp = *c2;
@@ -113,6 +138,11 @@ void swap_cards(card *c1, card *c2)
   *c1 = tmp;
 }
 
+/**
+ * Displays a deck to the user
+ * @param[in] title Text to describe state of the deck (new deck, shuffled deck etc..)
+ * @param[in] deck Deck to display
+*/
 void display_deck(const char *title, card *deck)
 {
   int i;
@@ -132,6 +162,11 @@ void display_deck(const char *title, card *deck)
   }
 }
 
+/**
+ * Get suit and rank of a card
+ * @param[in] card Card to get suit and rank of
+ * @return a single card represented by a letter and a number
+*/
 char *get_card(const card *card)
 {
   char *c = (char*)Calloc(6, sizeof(char));
@@ -158,11 +193,21 @@ char *get_card(const card *card)
   return c;
 }
 
+/**
+ * sort cards in a deck
+ * @param[in] deck Deck to sort
+*/
 void sort_deck(card *deck) /* sorter_kort */
 {
   qsort(deck, DECK_SIZE, sizeof(card), cmp_cards);
 }
 
+/**
+ * compare two cards
+ * @param[in] c1 Card number 1
+ * @param[in] c2 Card number 2
+ * @return an integer that tells if c1 > c2, c1 < c2 or c1 == c2
+*/
 int cmp_cards(const void *c1, const void *c2)
 {
   card *card1 = (card*)c1,
@@ -183,6 +228,12 @@ int cmp_cards(const void *c1, const void *c2)
   }
 }
 
+/**
+ * allocate nitems * size memory
+ * @param[in] nitems Number of items to allocate memory for
+ * @param[in] size Size of each item
+ * @return void *
+*/
 void *Calloc(size_t nitems, size_t size)
 {
   void *c = calloc(nitems, size);
