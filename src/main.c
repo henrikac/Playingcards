@@ -64,8 +64,9 @@ void create_deck(card *deck)
   for (i = 0; i < NUM_SUITS; i++)
     add_suit(deck, &num_cards, (suit)i);
 
-  for (i = num_cards; i < DECK_SIZE; i++)
-    deck[num_cards++] = create_card(NONE, JOKER);
+  if (num_cards < DECK_SIZE)
+    for (i = num_cards; i < DECK_SIZE; i++)
+      deck[num_cards++] = create_card(NONE, JOKER);
 }
 
 void add_suit(card *deck, size_t *counter, suit suit)
