@@ -19,6 +19,7 @@
 #define DECK_SIZE 55
 #define NUM_SUITS 4
 #define NUM_VALUES 13
+#define LEN_CARD_TEXT 6
 
 typedef enum { CLUBS, DIAMONDS, HEARTS, SPADES, NONE } suit; /**< NONE for jokers */
 typedef enum { TWO = 2, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, J, Q, K, A, JOKER } rank;
@@ -34,7 +35,7 @@ card create_card(suit suit, rank rank);
 void shuffle_deck(card *deck);
 void swap_cards(card *c1, card *c2);
 void display_deck(const char *title, card *deck);
-char *get_card(const card *card);
+void get_card(const card *card, char *card_text);
 void sort_deck(card *deck);
 int cmp_cards(const void *c1, const void *c2);
 void *Calloc(size_t nitems, size_t size);
@@ -122,7 +123,11 @@ void shuffle_deck(card *deck)
   for (i = 0; i < DECK_SIZE; i++)
   {
     new_index = rand() % DECK_SIZE;
-    swap_cards(&deck[i], &deck[new_index]);
+
+    if (new_index == i)
+      i--;
+    else
+      swap_cards(&deck[i], &deck[new_index]);
   }
 }
 
@@ -146,51 +151,45 @@ void swap_cards(card *c1, card *c2)
 void display_deck(const char *title, card *deck)
 {
   int i;
-  char *card_value;
+  char card[LEN_CARD_TEXT];
 
   printf(title);
   for (i = 0; i < DECK_SIZE; i++)
   {
-    card_value = get_card(&deck[i]);
+    memset(card, '\0', LEN_CARD_TEXT);
+    get_card(&deck[i], card);
 
     if (i % 13 == 0)
       printf("\n");
-    printf(" %s |", card_value);
-
-    if (card_value)
-      free(card_value);
+    printf(" %s |", card);
   }
 }
 
 /**
  * Get suit and rank of a card
  * @param[in] card Card to get suit and rank of
- * @return a single card represented by a letter and a number
+ * @param[out] card_text Letter and digit representing a card
 */
-char *get_card(const card *card)
+void get_card(const card *card, char *card_text)
 {
-  char *c = (char*)Calloc(6, sizeof(char));
-
   switch (card->suit)
   {
     case CLUBS:
-      sprintf(c, "C%d", card->rank);
+      sprintf(card_text, "C%d", card->rank);
       break;
     case DIAMONDS:
-      sprintf(c, "D%d", card->rank);
+      sprintf(card_text, "D%d", card->rank);
       break;
     case HEARTS:
-      sprintf(c, "H%d", card->rank);
+      sprintf(card_text, "H%d", card->rank);
       break;
     case SPADES:
-      sprintf(c, "S%d", card->rank);
+      sprintf(card_text, "S%d", card->rank);
       break;
     case NONE:
-      strcpy(c, "JOKER");
+      strcpy(card_text, "JOKER");
       break;
   }
-
-  return c;
 }
 
 /**
