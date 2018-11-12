@@ -1,8 +1,6 @@
 /*
- * Programmer: Henrik A. Christensen     Date Completed: in progress
+ * Programmer: Henrik A. Christensen     Date Completed: 12-11-2018
  * Instructor: Kurt Nørmark              Class:          Imperative Programming
- *
- * Coming soon...
 */
 
 #include <stdio.h>
